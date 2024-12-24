@@ -1,0 +1,47 @@
+.stark-message-popup {
+    position: fixed;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(400px, 60vw);
+    background-color: #fafafa;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding: 32px 32px;
+    z-index: 1000;
+}
+
+.stark-message-popup h2 {
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+}
+
+.stark-message-popup p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+}
+
+.stark-message-close {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #666;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 0;
+}
+
+.stark-message-close svg {
+    width: 24px;
+    height: 24px;
+    color: #fff;
+}
+
+.stark-message-close:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #007bff;
+}
