@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Stark Message
  * Description: Displays a sticky container popup on the right side of the screen with a dismissable close button. Includes admin settings to configure custom HTML content, CSS, a toggle switch, and page-specific display. This rewrite removes jQuery and only loads assets on the frontend when the popup is enabled.
- * Version: 1.6
+ * Version: 1.7
  * Author: Julian Stark
  * License: GPLv2 or later
  */
@@ -75,11 +75,11 @@ function stark_message_display_popup() {
     ?>
 <div class="stark-message-popup" role="dialog" aria-hidden="false">
     <button class="stark-message-close" id="stark-message-close" aria-label="Close popup">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
+            <path
+                d="M256-227.69 227.69-256l224-224-224-224L256-732.31l224 224 224-224L732.31-704l-224 224 224 224L704-227.69l-224-224-224 224Z" />
         </svg>
+
     </button>
     <div class="stark-message-content">
         <?php echo wp_kses_post($html_content); ?>
