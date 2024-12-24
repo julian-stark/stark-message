@@ -2,10 +2,14 @@
 
 /**
  * Plugin Name: Stark Message
- * Description: Displays a sticky container popup on the right side of the screen with a dismissable close button. Includes admin settings to configure custom HTML content, CSS, a toggle switch, and page-specific display. This rewrite removes jQuery and only loads assets on the frontend when the popup is enabled.
- * Version: 1.7
+ * Plugin URI: https://julianstark.de/plugins/
+ * Description: A simple and lightweight solution (>2KB, no jQuery) to display a sticky message popup on the screen with a dismissable close button. Includes admin settings to configure custom HTML content and CSS and define pages to display popup.
+ * Version: 0.9
  * Author: Julian Stark
- * License: GPLv2 or later
+ * Author URI: https://julianstark.de
+ * Text Domain: stark-message
+ * License: GPL-2.0+
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 if (!defined('ABSPATH')) {
@@ -17,8 +21,16 @@ if (!defined('ABSPATH')) {
  */
 function stark_message_enqueue_assets() {
     if (!is_admin() && stark_message_is_popup_enabled()) {
+        // Enqueue style and script
         wp_enqueue_style('stark-message-style', plugin_dir_url(__FILE__) . 'style.css');
         wp_enqueue_script('stark-message-script', plugin_dir_url(__FILE__) . 'script.js', array(), null, true);
+
+        // Fetch custom CSS from the database
+        $custom_css = get_option('stark_message_css', '');
+        if (!empty($custom_css)) {
+            // Add custom CSS inline to the loaded stylesheet
+            wp_add_inline_style('stark-message-style', $custom_css);
+        }
 
         // Pass PHP data to JavaScript
         $cookie_version = get_option('stark_message_cookie_version', time());
@@ -75,11 +87,11 @@ function stark_message_display_popup() {
     ?>
 <div class="stark-message-popup" role="dialog" aria-hidden="false">
     <button class="stark-message-close" id="stark-message-close" aria-label="Close popup">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
-            <path
-                d="M256-227.69 227.69-256l224-224-224-224L256-732.31l224 224 224-224L732.31-704l-224 224 224 224L704-227.69l-224-224-224 224Z" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
-
     </button>
     <div class="stark-message-content">
         <?php echo wp_kses_post($html_content); ?>
@@ -142,7 +154,7 @@ function stark_message_settings_page() {
 
     $enabled = get_option('stark_message_enabled', false);
     $html_content = get_option('stark_message_html_content', '<p>This is the default content. Configure me in the Stark Message settings.</p>');
-    $custom_css = get_option('stark_message_css', '.stark-message-content {}');
+    $custom_css = get_option('stark_message_css', '.stark-message-popup {' . PHP_EOL . '  box-shadow: 0px 0px 10px 5px rgba(0,0,0,0.1);' . PHP_EOL . '}');
     $page_ids = get_option('stark_message_page_ids', '');
 
     ?>
@@ -173,10 +185,12 @@ function stark_message_settings_page() {
             <tr>
                 <th scope="row"><label for="stark_message_css">Custom CSS</label></th>
                 <td>
-                    <textarea id="stark_message_css" name="stark_message_css" rows="10"
-                        class="large-text"><?php echo esc_textarea($custom_css); ?></textarea>
-                    <p class="description">Add custom CSS for the popup. Default is
-                        <code>.stark-message-content {}</code>.
+                    <textarea id="stark_message_css" name="stark_message_css" rows="10" class="large-text"
+                        style="font-family: monospace; white-space: pre;"><?php echo esc_textarea($custom_css); ?></textarea>
+                    <p class="description">Add custom CSS for the popup:<br>
+                        <code>.stark-message-popup {}</code><br>
+                        <code>.stark-message-content {}</code><br>
+                        <code>.stark-message-close {}</code>
                     </p>
                 </td>
             </tr>
@@ -195,3 +209,15 @@ function stark_message_settings_page() {
 </div>
 <?php
 }
+
+/**
+ * Cleanup plugin data on uninstall.
+ */
+function stark_message_uninstall() {
+    delete_option('stark_message_enabled');
+    delete_option('stark_message_html_content');
+    delete_option('stark_message_css');
+    delete_option('stark_message_page_ids');
+    delete_option('stark_message_cookie_version');
+}
+register_uninstall_hook(__FILE__, 'stark_message_uninstall');
